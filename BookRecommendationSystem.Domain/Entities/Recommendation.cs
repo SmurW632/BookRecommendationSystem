@@ -10,7 +10,7 @@
         public int BookId { get; set; }
 
         // Навигационные свойства
-        public User User { get; set; }
-        public Book Book { get; set; }
+        public User User { get; set; } = null!;
+        public Book Book { get; set; } = null!;
     }
 }
