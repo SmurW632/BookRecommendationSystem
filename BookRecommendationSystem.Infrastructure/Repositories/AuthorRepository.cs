@@ -18,7 +18,7 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(int id)
         {
             var author = GetByIdAsync(id).Result;
             if (author != null)
@@ -33,7 +33,7 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
             return await _context.Authors.ToListAsync();
         }
 
-        public async Task<Author> GetByIdAsync(Guid id)
+        public async Task<Author> GetByIdAsync(int id)
         {
             return await _context.Authors.FindAsync(id);
         }
