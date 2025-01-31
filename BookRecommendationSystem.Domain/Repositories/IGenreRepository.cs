@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BookRecommendationSystem.Domain.Entities;
 
-namespace BookRecommendationSystem.Domain.Entities
+namespace BookRecommendationSystem.Domain.Repositories
 {
-    internal interface IGenreRepository
+    public interface IGenreRepository
     {
+        Task<Genre> GetByIdAsync(Guid id);
+        Task<IEnumerable<Genre>> GetAllAsync();
+        Task<Genre> GetByNameAsync(string name);
+        Task AddAsync(Genre genre);
+        Task UpdateAsync(Genre genre);
+        Task DeleteAsync(Guid id);
     }
 }
