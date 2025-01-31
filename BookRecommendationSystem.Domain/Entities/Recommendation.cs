@@ -3,7 +3,10 @@
     public class Recommendation
     {
         public int Id { get; set; }
+        public string Reason { get; set; } = null!;
         public float Score { get; set; } // Вес рекомендации (например, от 0 до 1)
+        public DateTime CreatedAt { get; set; }
+        public bool IsActive { get; set; }
 
         // Внешние ключи
         public int UserId { get; set; }
