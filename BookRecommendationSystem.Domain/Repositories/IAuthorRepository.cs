@@ -7,8 +7,8 @@ namespace BookRecommendationSystem.Domain.Repositories
         Task<Author> GetByIdAsync(int id);
         Task<IEnumerable<Author>> GetAllAsync();
         Task<Author> GetByNameAsync(string name);
-        Task AddAsync(Author author);
-        Task UpdateAsync(Author author);
+        Task AddAsync(Author authorDto);
+        Task UpdateAsync(Author authorDto);
         Task DeleteAsync(int id);
     }
 }
