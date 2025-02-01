@@ -49,7 +49,7 @@ namespace BookRecommendationSystem.Application.Services
         public async Task UpdateAuthorAsync(AuthorDto authorDto)
         {
             var author = _mapper.Map<Author>(authorDto);
-            await _authorRepository.UpdateAsync(author);
+        await _authorRepository.UpdateAsync(author);
         }
     }
 }

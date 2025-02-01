@@ -7,8 +7,6 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
 {
     public class GenreRepository : IGenreRepository
     {
-        private const string GENRE_NOT_FOUND = "Жанр не найден.";
-
         private readonly AppDbContext _context;
 
         public GenreRepository(AppDbContext context)
@@ -37,18 +35,12 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
 
         public async Task<Genre> GetByIdAsync(int id)
         {
-            var genre = await _context.Genres.FirstOrDefaultAsync(g => g.Id == id);
-            Guard.AgainstNull(genre, GENRE_NOT_FOUND);
-
-            return genre!;
+            return await _context.Genres.FirstOrDefaultAsync(g => g.Id == id);
         }
 
         public async Task<Genre> GetByNameAsync(string name)
         {
-            var genre = await _context.Genres.FirstOrDefaultAsync(g => g.Name == name);
-            Guard.AgainstNull(genre, GENRE_NOT_FOUND);
-
-            return genre!;
+            return await _context.Genres.FirstOrDefaultAsync(g => g.Name == name);
         }
 
         public async Task UpdateAsync(Genre genre)

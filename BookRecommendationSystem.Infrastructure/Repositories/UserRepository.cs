@@ -7,8 +7,6 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private const string RECOMMENDATION_NOT_FOUND = "Рекомендация не найдена.";
-
         private readonly AppDbContext _context;
 
         public UserRepository(AppDbContext context)
@@ -37,18 +35,12 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
 
         public async Task<User> GetByEmailAsync(string email)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-            Guard.AgainstNull(user, RECOMMENDATION_NOT_FOUND);
-
-            return user!;
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
 
         public async Task<User> GetByIdAsync(int id)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
-            Guard.AgainstInvalidId(id, RECOMMENDATION_NOT_FOUND);
-
-            return user!;
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task UpdateAsync(User user)

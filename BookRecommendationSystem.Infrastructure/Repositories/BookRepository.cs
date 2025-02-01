@@ -8,10 +8,6 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
 {
     public class BookRepository : IBookRepository
     {
-        private const string BOOK_NOT_FOUND = "Книга не найдена.";
-        private const string RATING_NOT_FOUND = "Рейтинг не найден.";
-        private const string RECOMMENDATION_NOT_FOUND = "Рекомендация не найдена.";
-
         private readonly AppDbContext _context;
 
         public BookRepository(AppDbContext context)
@@ -57,7 +53,6 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
             var book = await GetByIdAsync(bookId);
 
             var rating = book.Ratings.FirstOrDefault(b => b.Id == ratingId);
-            Guard.AgainstNull(rating, RATING_NOT_FOUND);
 
             book.Ratings.Remove(rating!);
             await _context.SaveChangesAsync();
@@ -68,7 +63,6 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
             var book = await GetByIdAsync(bookId);
 
             var recommendation = book.Recommendations.FirstOrDefault(b => b.Id == recommendationId);
-            Guard.AgainstNull(recommendation, RECOMMENDATION_NOT_FOUND);
 
             book.Recommendations.Remove(recommendation!);
             await _context.SaveChangesAsync();
@@ -108,15 +102,13 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
 
         public async Task<Book> GetByIdAsync(int id)
         {
-            var book = await _context.Books
+            return await _context.Books
                 .Include(b => b.Author)
                 .Include(b => b.Genre)
                 .Include(b => b.Ratings)
                 .Include(b => b.Recommendations)
                 .FirstOrDefaultAsync(b => b.Id == id);
-            Guard.AgainstNull(book, BOOK_NOT_FOUND);
 
-            return book!;
         }
 
         public async Task UpdateAsync(Book book)
@@ -131,7 +123,6 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
 
             var existingRating = book!.Ratings
                 .FirstOrDefault(r => r.Id == rating.Id);
-            Guard.AgainstNull(existingRating, RATING_NOT_FOUND);
 
             existingRating!.Score = rating.Score;
             existingRating.Review = rating.Review;
@@ -144,7 +135,6 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
             var book = await GetByIdAsync(bookId);
 
             var existingRecommendation = book!.Recommendations.FirstOrDefault(r => r.Id == recommendation.Id);
-            Guard.AgainstNull(existingRecommendation, RECOMMENDATION_NOT_FOUND);
 
             existingRecommendation!.Reason = recommendation.Reason;
             existingRecommendation.Score = recommendation.Score;

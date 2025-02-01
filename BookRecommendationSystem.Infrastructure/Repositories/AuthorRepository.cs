@@ -7,8 +7,6 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
 {
     public class AuthorRepository : IAuthorRepository
     {
-        private const string AUTHOR_NOT_FOUND = "Автор не найден.";
-
         private readonly AppDbContext _context;
 
         public AuthorRepository(AppDbContext context)
@@ -37,18 +35,12 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
 
         public async Task<Author> GetByIdAsync(int id)
         {
-            var author = await _context.Authors.FirstOrDefaultAsync(a => a.Id == id);
-            Guard.AgainstNull(author, AUTHOR_NOT_FOUND);
-
-            return author!;
+            return await _context.Authors.FirstOrDefaultAsync(a => a.Id == id);
         }
 
         public async Task<Author> GetByNameAsync(string name)
         {
-            var author = await _context.Authors.FirstOrDefaultAsync(x => x.Name == name);
-            Guard.AgainstNull(author, AUTHOR_NOT_FOUND);
-
-            return author!;
+            return await _context.Authors.FirstOrDefaultAsync(x => x.Name == name);
         }
 
         public async Task UpdateAsync(Author author)
