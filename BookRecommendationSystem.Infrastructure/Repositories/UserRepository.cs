@@ -1,12 +1,60 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BookRecommendationSystem.Domain.Entities;
+using BookRecommendationSystem.Domain.Repositories;
+using BookRecommendationSystem.Infrastructure.Helpers;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookRecommendationSystem.Infrastructure.Repositories
 {
-    internal class UserRepository
+    public class UserRepository : IUserRepository
     {
+        private const string RECOMMENDATION_NOT_FOUND = "Рекомендация не найдена.";
+
+        private readonly AppDbContext _context;
+
+        public UserRepository(AppDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task AddAsync(User user)
+        {
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var user = await GetByIdAsync(id);
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<User>> GetAllAsync()
+        {
+            return await _context.Users.ToListAsync();
+        }
+
+        public async Task<User> GetByEmailAsync(string email)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            Guard.AgainstNull(user, RECOMMENDATION_NOT_FOUND);
+
+            return user!;
+        }
+
+        public async Task<User> GetByIdAsync(int id)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            Guard.AgainstInvalidId(id, RECOMMENDATION_NOT_FOUND);
+
+            return user!;
+        }
+
+        public async Task UpdateAsync(User user)
+        {
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+        }
     }
 }

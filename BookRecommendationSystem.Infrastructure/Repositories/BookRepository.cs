@@ -1,12 +1,18 @@
 ﻿using BookRecommendationSystem.Domain.Entities;
 using BookRecommendationSystem.Domain.Repositories;
+using BookRecommendationSystem.Infrastructure.Helpers;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace BookRecommendationSystem.Infrastructure.Repositories
 {
     public class BookRepository : IBookRepository
     {
-        public readonly AppDbContext _context;
+        private const string BOOK_NOT_FOUND = "Книга не найдена.";
+        private const string RATING_NOT_FOUND = "Рейтинг не найден.";
+        private const string RECOMMENDATION_NOT_FOUND = "Рекомендация не найдена.";
+
+        private readonly AppDbContext _context;
 
         public BookRepository(AppDbContext context)
         {
@@ -21,10 +27,7 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
 
         public async Task AddRatingAsync(int bookId, Rating rating)
         {
-            var book = await _context.Books
-                .Include(b => b.Ratings)
-                .FirstOrDefaultAsync(b => b.Id == bookId)
-                ?? throw new Exception("Книга не найдена.");
+            var book = await GetByIdAsync(bookId);
 
             book.Ratings.Add(rating);
             await _context.SaveChangesAsync();
@@ -32,10 +35,7 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
 
         public async Task AddRecommendationAsync(int bookId, Recommendation recommendation)
         {
-            var book = await _context.Books
-                .Include(b => b.Recommendations)
-                .FirstOrDefaultAsync(b => b.Id == bookId)
-                ?? throw new Exception("Книга не найдена.");
+            var book = await GetByIdAsync(bookId);
 
             book.Recommendations.Add(recommendation);
             await _context.SaveChangesAsync();
@@ -43,11 +43,7 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
 
         public async Task DeleteAsync(int id)
         {
-            var book = await _context.Books
-                .Include(b => b.Ratings)
-                .Include(b => b.Recommendations)
-                .FirstOrDefaultAsync(b => b.Id == id)
-                ?? throw new Exception("Книга не найдена");
+            var book = await GetByIdAsync(id);
 
             _context.Ratings.RemoveRange(book.Ratings);
             _context.Recommendations.RemoveRange(book.Recommendations);
@@ -58,29 +54,23 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
 
         public async Task DeleteRatingAsync(int bookId, int ratingId)
         {
-            var book = await _context.Books
-                .Include(b => b.Ratings)
-                .FirstOrDefaultAsync(b => b.Id == bookId)
-                ?? throw new Exception("Книга не найдена.");
+            var book = await GetByIdAsync(bookId);
 
-            var rating = book.Ratings.FirstOrDefault(b => b.Id == ratingId)
-                ?? throw new Exception("Рейтинг не найден.");
+            var rating = book.Ratings.FirstOrDefault(b => b.Id == ratingId);
+            Guard.AgainstNull(rating, RATING_NOT_FOUND);
 
-            book.Ratings.Remove(rating);
+            book.Ratings.Remove(rating!);
             await _context.SaveChangesAsync();
         }
 
         public async Task DeleteRecommendationAsync(int bookId, int recommendationId)
         {
-            var book = await _context.Books
-                .Include(b => b.Recommendations)
-                .FirstOrDefaultAsync(b => b.Id == bookId)
-                ?? throw new Exception("Книга не найдена.");
+            var book = await GetByIdAsync(bookId);
 
-            var recommendation = book.Recommendations.FirstOrDefault(b => b.Id == recommendationId)
-                ?? throw new Exception("Рекомендация не найдена.");
+            var recommendation = book.Recommendations.FirstOrDefault(b => b.Id == recommendationId);
+            Guard.AgainstNull(recommendation, RECOMMENDATION_NOT_FOUND);
 
-            book.Recommendations.Remove(recommendation);
+            book.Recommendations.Remove(recommendation!);
             await _context.SaveChangesAsync();
         }
 
@@ -118,12 +108,15 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
 
         public async Task<Book> GetByIdAsync(int id)
         {
-            return await _context.Books
+            var book = await _context.Books
                 .Include(b => b.Author)
                 .Include(b => b.Genre)
                 .Include(b => b.Ratings)
                 .Include(b => b.Recommendations)
                 .FirstOrDefaultAsync(b => b.Id == id);
+            Guard.AgainstNull(book, BOOK_NOT_FOUND);
+
+            return book!;
         }
 
         public async Task UpdateAsync(Book book)
@@ -134,16 +127,13 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
 
         public async Task UpdateRatingAsync(int bookId, Rating rating)
         {
-            var book = await _context.Books
-                .Include(b => b.Ratings)
-                .FirstOrDefaultAsync(b => b.Id == bookId)
-                ?? throw new Exception("Книга не найдена.");
+            var book = await GetByIdAsync(bookId);
 
-            var existingRating = book.Ratings
-                .FirstOrDefault(r => r.Id == rating.Id)
-                ?? throw new Exception("Рейтинг не найден.");
+            var existingRating = book!.Ratings
+                .FirstOrDefault(r => r.Id == rating.Id);
+            Guard.AgainstNull(existingRating, RATING_NOT_FOUND);
 
-            existingRating.Score = rating.Score;
+            existingRating!.Score = rating.Score;
             existingRating.Review = rating.Review;
 
             await _context.SaveChangesAsync();
@@ -151,15 +141,12 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
 
         public async Task UpdateRecommendationAsync(int bookId, Recommendation recommendation)
         {
-            var book = await _context.Books
-                .Include(b => b.Recommendations)
-                .FirstOrDefaultAsync(b => b.Id == bookId)
-                ?? throw new Exception("Книга не найдена.");
+            var book = await GetByIdAsync(bookId);
 
-            var existingRecommendation = book.Recommendations.FirstOrDefault(r => r.Id == recommendation.Id)
-                ?? throw new Exception("Рекомендация не найдена.");
+            var existingRecommendation = book!.Recommendations.FirstOrDefault(r => r.Id == recommendation.Id);
+            Guard.AgainstNull(existingRecommendation, RECOMMENDATION_NOT_FOUND);
 
-            existingRecommendation.Reason = recommendation.Reason;
+            existingRecommendation!.Reason = recommendation.Reason;
             existingRecommendation.Score = recommendation.Score;
 
             await _context.SaveChangesAsync();
