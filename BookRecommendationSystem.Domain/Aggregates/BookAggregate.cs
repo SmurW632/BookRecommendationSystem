@@ -21,7 +21,7 @@ namespace BookRecommendationSystem.Domain.Aggregates
         /// <exception cref="ArgumentException">Если оценка выходит за допустимые пределы.</exception>
         public void AddRating(int score, string review)
         {
-            if(score < 1 || score > 5)
+            if (score < 1 || score > 5)
             {
                 throw new ArgumentException("Оценка должна быть в диапазоне от 1 до 5");
             }
@@ -43,7 +43,7 @@ namespace BookRecommendationSystem.Domain.Aggregates
         /// <exception cref="InvalidOperationException">Если рейтинг не найден.</exception>
         public void RemoveRating(int ratingId)
         {
-            var rating = _book.Ratings.FirstOrDefault(r => r.Id == ratingId) 
+            var rating = _book.Ratings.FirstOrDefault(r => r.Id == ratingId)
                 ?? throw new InvalidOperationException("Рейтинг не найден.");
 
             _book.Ratings.Remove(rating);
