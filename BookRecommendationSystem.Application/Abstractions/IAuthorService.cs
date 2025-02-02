@@ -1,5 +1,4 @@
 ﻿using BookRecommendationSystem.Application.DTOs;
-using BookRecommendationSystem.Domain.Entities;
 
 namespace BookRecommendationSystem.Application.Abstractions
 {
