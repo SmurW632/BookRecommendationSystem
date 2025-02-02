@@ -10,12 +10,12 @@ namespace BookRecommendationSystem.Domain.Repositories
         Task<IEnumerable<Book>> GetByGenreIdAsync(int genreId);
         Task AddAsync(Book book);
         Task UpdateAsync(Book book);
-        Task DeleteAsync(int id);
+        Task DeleteAsync(Book book);
 
         // Методы для работы с рейтингами
         Task AddRatingAsync(int bookId, Rating rating);
         Task UpdateRatingAsync(int bookId, Rating rating);
-        Task DeleteRatingAsync(int bookId, int ratingId);
+        Task DeleteRatingAsync(Book book, Rating rating);
 
         // Методы для работы с рекомендациями
         Task AddRecommendationAsync(int bookId, Recommendation recommendation);

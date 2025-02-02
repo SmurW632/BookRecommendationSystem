@@ -1,8 +1,6 @@
 ﻿using BookRecommendationSystem.Domain.Entities;
 using BookRecommendationSystem.Domain.Repositories;
-using BookRecommendationSystem.Infrastructure.Helpers;
 using Microsoft.EntityFrameworkCore;
-using System.Net;
 
 namespace BookRecommendationSystem.Infrastructure.Repositories
 {
@@ -23,24 +21,18 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
 
         public async Task AddRatingAsync(int bookId, Rating rating)
         {
-            var book = await GetByIdAsync(bookId);
-
-            book.Ratings.Add(rating);
+            await _context.Ratings.AddAsync(rating);
             await _context.SaveChangesAsync();
         }
 
         public async Task AddRecommendationAsync(int bookId, Recommendation recommendation)
         {
-            var book = await GetByIdAsync(bookId);
-
-            book.Recommendations.Add(recommendation);
+            await _context.Recommendations.AddAsync(recommendation);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(Book book)
         {
-            var book = await GetByIdAsync(id);
-
             _context.Ratings.RemoveRange(book.Ratings);
             _context.Recommendations.RemoveRange(book.Recommendations);
             _context.Books.Remove(book);
@@ -48,23 +40,15 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteRatingAsync(int bookId, int ratingId)
+        public async Task DeleteRatingAsync(Book book, Rating rating)
         {
-            var book = await GetByIdAsync(bookId);
-
-            var rating = book.Ratings.FirstOrDefault(b => b.Id == ratingId);
-
-            book.Ratings.Remove(rating!);
+            _context.Ratings.Remove(rating);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteRecommendationAsync(int bookId, int recommendationId)
+        public async Task DeleteRecommendationAsync(int bookId, Recommendation recommendation)
         {
-            var book = await GetByIdAsync(bookId);
-
-            var recommendation = book.Recommendations.FirstOrDefault(b => b.Id == recommendationId);
-
-            book.Recommendations.Remove(recommendation!);
+            _context.Recommendations.Remove(recommendation);
             await _context.SaveChangesAsync();
         }
 
@@ -119,26 +103,13 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
 
         public async Task UpdateRatingAsync(int bookId, Rating rating)
         {
-            var book = await GetByIdAsync(bookId);
-
-            var existingRating = book!.Ratings
-                .FirstOrDefault(r => r.Id == rating.Id);
-
-            existingRating!.Score = rating.Score;
-            existingRating.Review = rating.Review;
-
+            _context.Ratings.Update(rating);
             await _context.SaveChangesAsync();
         }
 
         public async Task UpdateRecommendationAsync(int bookId, Recommendation recommendation)
         {
-            var book = await GetByIdAsync(bookId);
-
-            var existingRecommendation = book!.Recommendations.FirstOrDefault(r => r.Id == recommendation.Id);
-
-            existingRecommendation!.Reason = recommendation.Reason;
-            existingRecommendation.Score = recommendation.Score;
-
+            _context.Recommendations.Update(recommendation);
             await _context.SaveChangesAsync();
         }
     }

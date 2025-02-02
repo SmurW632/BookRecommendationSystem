@@ -1,6 +1,5 @@
 ﻿using BookRecommendationSystem.Domain.Entities;
 using BookRecommendationSystem.Domain.Repositories;
-using BookRecommendationSystem.Infrastructure.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookRecommendationSystem.Infrastructure.Repositories
@@ -20,10 +19,8 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(Author author)
         {
-            var author = await GetByIdAsync(id);
-
             _context.Authors.Remove(author);
             await _context.SaveChangesAsync();
         }
@@ -33,12 +30,12 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
             return await _context.Authors.ToListAsync();
         }
 
-        public async Task<Author> GetByIdAsync(int id)
+        public async Task<Author?> GetByIdAsync(int id)
         {
             return await _context.Authors.FirstOrDefaultAsync(a => a.Id == id);
         }
 
-        public async Task<Author> GetByNameAsync(string name)
+        public async Task<Author?> GetByNameAsync(string name)
         {
             return await _context.Authors.FirstOrDefaultAsync(x => x.Name == name);
         }
