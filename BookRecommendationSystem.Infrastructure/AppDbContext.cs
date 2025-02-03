@@ -12,7 +12,7 @@ namespace BookRecommendationSystem.Infrastructure
         public DbSet<Genre> Genres { get; set; } = null!;
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<Rating> Ratings { get; set; } = null!;
-        public DbSet<Recommendation> Recommendations { get; set;} = null!;
+        public DbSet<Recommendation> Recommendations { get; set; } = null!;
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
