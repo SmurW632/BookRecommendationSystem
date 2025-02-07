@@ -1,17 +1,51 @@
 ﻿using BookRecommendationSystem.Domain.Entities;
+using BookRecommendationSystem.Domain.Repositories;
 
 namespace BookRecommendationSystem.Domain.Aggregates
 {
     public class BookAggregate
     {
         private readonly Book _book;
+        private readonly IAuthorRepository _authorRepository;
+        private readonly IGenreRepository _genreRepository;
 
-        private BookAggregate() { }
-
-        public BookAggregate(Book book)
+        public BookAggregate(Book book, IAuthorRepository authorRepository, IGenreRepository genreRepository)
         {
             _book = book ?? throw new ArgumentNullException(nameof(book));
+            _authorRepository = authorRepository ?? throw new ArgumentNullException(nameof(authorRepository));
+            _genreRepository = genreRepository ?? throw new ArgumentNullException(nameof(genreRepository));
         }
+
+        // Метод для добавления книги
+        public async Task AddBookAsync(string title, string description, int publishedYear, string coverImageUrl, string authorName, string biography, string genreName)
+        {
+            // Ищем автора по имени
+            var author = await _authorRepository.GetByNameAsync(authorName);
+            if (author == null)
+            {
+                // Если автор не найден, создаем нового
+                author = new Author { Name = authorName, Biography = biography};
+                await _authorRepository.AddAsync(author);
+            }
+
+            // Ищем жанр по названию
+            var genre = await _genreRepository.GetByNameAsync(genreName);
+            if (genre == null)
+            {
+                // Если жанр не найден, создаем новый
+                genre = new Genre { Name = genreName };
+                await _genreRepository.AddAsync(genre);
+            }
+
+            // Устанавливаем свойства книги
+            _book.Title = title;
+            _book.Description = description;
+            _book.PublishedYear = publishedYear;
+            _book.CoverImageUrl = coverImageUrl;
+            _book.AuthorId = author.Id;
+            _book.GenreId = genre.Id;
+        }
+
 
         /// <summary>
         /// Добавить рейтинг к книге.

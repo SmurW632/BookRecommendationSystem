@@ -13,10 +13,14 @@ namespace BookRecommendationSystem.Application.Services
     {
 
         private readonly IBookRepository _bookRepository;
+        private readonly IAuthorRepository _authorRepository;
+        private readonly IGenreRepository _genreRepository;
         private IMapper _mapper;
 
-        public BookService(IBookRepository bookRepository, IMapper mapper)
+        public BookService(IBookRepository bookRepository, IAuthorRepository authorRepository, IGenreRepository genreRepository, IMapper mapper)
         {
+            _authorRepository = authorRepository;
+            _genreRepository = genreRepository;
             _bookRepository = bookRepository;
             _mapper = mapper;
         }
@@ -26,6 +30,19 @@ namespace BookRecommendationSystem.Application.Services
             var book = _mapper.Map<Book>(bookDto);
             Guard.AgainstNull(book, ExMesConsts.BOOK_NOT_FOUND);
 
+            var bookAggregate = new BookAggregate(book, _authorRepository, _genreRepository);
+            Guard.AgainstNull(bookAggregate, ExMesConsts.BOOK_NOT_FOUND);
+
+            await bookAggregate.AddBookAsync(
+                bookDto.Title,
+                bookDto.Description,
+                bookDto.PublishedYear,
+                bookDto.CoverImageUrl,
+                bookDto.Author.Name,
+                bookDto.Author.Biography,
+                bookDto.Genre.Name
+                );
+
             await _bookRepository.AddAsync(book);
         }
 
@@ -34,10 +51,7 @@ namespace BookRecommendationSystem.Application.Services
             var book = await _bookRepository.GetByIdAsync(bookId);
             Guard.AgainstNull(book, ExMesConsts.BOOK_NOT_FOUND);
 
-            var rating = _mapper.Map<Rating>(ratingDto);
-            Guard.AgainstNull(rating, ExMesConsts.RATING_NOT_FOUND);
-
-            var bookAggregate = new BookAggregate(book);
+            var bookAggregate = new BookAggregate(book, _authorRepository, _genreRepository);
             bookAggregate.AddRating(ratingDto.Score, ratingDto.Review);
 
             await _bookRepository.UpdateAsync(book);
@@ -48,10 +62,7 @@ namespace BookRecommendationSystem.Application.Services
             var book = await _bookRepository.GetByIdAsync(bookId);
             Guard.AgainstNull(book, ExMesConsts.BOOK_NOT_FOUND);
 
-            var recommendation = _mapper.Map<Recommendation>(recommendationDto);
-            Guard.AgainstNull(recommendation, ExMesConsts.RECOMMENDATION_NOT_FOUND);
-
-            var bookAggregate = new BookAggregate(book);
+            var bookAggregate = new BookAggregate(book, _authorRepository, _genreRepository);
             bookAggregate.AddRecommendation(recommendationDto.UserId, recommendationDto.Reason);
 
             await _bookRepository.UpdateAsync(book);

@@ -8,7 +8,7 @@
         public int PublishedYear { get; set; }
         public string CoverImageUrl { get; set; } = null!;
 
-        public int AuthorId { get; set; }
-        public int GenreId { get; set; }
+        public AuthorDto Author { get; set; } = null!;
+        public GenreDto Genre { get; set; } = null!;
     }
 }

@@ -1,0 +1,17 @@
+﻿using AutoMapper;
+using BookRecommendationSystem.Application.DTOs;
+using BookRecommendationSystem.Domain.Entities;
+
+namespace BookRecommendationSystem.Application.Mapping
+{
+    public class MappingProfile : Profile
+    {
+        public MappingProfile()
+        {
+            CreateMap<Book, BookDto>().ReverseMap();
+            CreateMap<Author, AuthorDto>().ReverseMap();
+            CreateMap<Genre, GenreDto>().ReverseMap();
+            CreateMap<User, UserDto>().ReverseMap();
+        }
+    }
+}

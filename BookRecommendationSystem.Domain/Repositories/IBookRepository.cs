@@ -20,6 +20,6 @@ namespace BookRecommendationSystem.Domain.Repositories
         // Методы для работы с рекомендациями
         Task AddRecommendationAsync(int bookId, Recommendation recommendation);
         Task UpdateRecommendationAsync(int bookId, Recommendation recommendation);
-        Task DeleteRecommendationAsync(int bookId, int recommendationId);
+        Task DeleteRecommendationAsync(int bookId, Recommendation recommendation);
     }
 }
