@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BookRecommendationSystem.WebApi\BookRecommendationSystem.WebApi.csproj" />
+    <ProjectReference Include="..\BookRecommendationSystem.Application\BookRecommendationSystem.Application.csproj" />
   </ItemGroup>
 
 </Project>

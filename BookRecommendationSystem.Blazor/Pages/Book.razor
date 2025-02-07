@@ -1,0 +1,65 @@
+﻿@page "/books"
+@using BookRecommendationSystem.Application.DTOs
+@inject HttpClient Http
+
+<h3>Books</h3>
+
+@if (books == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var book in books)
+            {
+                <tr>
+                    <td>@book.Title</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private BookDto[] books;
+    private string errorMessage;
+    private string responseContent;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var response = await Http.GetAsync("api/Book");
+            responseContent = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                books = await response.Content.ReadFromJsonAsync<BookDto[]>();
+            }
+            else
+            {
+                errorMessage = $"Ошибка: {response.StatusCode}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+}
+
+@if (errorMessage != null)
+{
+    <p style="color: red;">Ошибка: @errorMessage</p>
+}
+
+@if (responseContent != null)
+{
+    <pre>@responseContent</pre>
+}

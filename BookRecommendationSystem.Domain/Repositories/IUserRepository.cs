@@ -4,11 +4,11 @@ namespace BookRecommendationSystem.Domain.Repositories
 {
     public interface IUserRepository
     {
-        Task<User> GetByIdAsync(Guid id);
+        Task<User?> GetByIdAsync(int id);
         Task<IEnumerable<User>> GetAllAsync();
-        Task<User> GetByEmailAsync(string email);
+        Task<User?> GetByEmailAsync(string email);
         Task AddAsync(User user);
         Task UpdateAsync(User user);
-        Task DeleteAsync(Guid id);
+        Task DeleteAsync(User user);
     }
 }
