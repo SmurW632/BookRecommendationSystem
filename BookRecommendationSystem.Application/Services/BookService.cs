@@ -63,7 +63,7 @@ namespace BookRecommendationSystem.Application.Services
             Guard.AgainstNull(book, ExMesConsts.BOOK_NOT_FOUND);
 
             var bookAggregate = new BookAggregate(book, _authorRepository, _genreRepository);
-            bookAggregate.AddRecommendation(recommendationDto.UserId, recommendationDto.Reason);
+            bookAggregate.AddRecommendation(recommendationDto.CustomerId, recommendationDto.Reason);
 
             await _bookRepository.UpdateAsync(book);
         }

@@ -9,11 +9,11 @@
         public bool IsActive { get; set; }
 
         // Внешние ключи
-        public int UserId { get; set; }
+        public int CustomerId { get; set; }
         public int BookId { get; set; }
 
         // Навигационные свойства
-        public User User { get; set; } = null!;
+        public Customer Customer { get; set; } = null!;
         public Book Book { get; set; } = null!;
     }
 }

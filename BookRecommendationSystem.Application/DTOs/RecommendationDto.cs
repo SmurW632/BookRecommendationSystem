@@ -9,7 +9,7 @@
         public bool IsActive { get; set; }
 
         // Внешние ключи
-        public int UserId { get; set; }
+        public int CustomerId { get; set; }
         public int BookId { get; set; }
     }
 }
