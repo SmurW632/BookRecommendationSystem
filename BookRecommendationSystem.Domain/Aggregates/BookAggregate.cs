@@ -86,13 +86,13 @@ namespace BookRecommendationSystem.Domain.Aggregates
         /// <summary>
         /// Добавить рекомендацию для книги.
         /// </summary>
-        /// <param name="userId">ID пользователя, который оставляет рекомендацию.</param>
+        /// <param name="customerId">ID пользователя, который оставляет рекомендацию.</param>
         /// <param name="reason">Причина рекомендации.</param>
-        public void AddRecommendation(int userId, string reason)
+        public void AddRecommendation(int customerId, string reason)
         {
             var recommendation = new Recommendation
             {
-                UserId = userId,
+                CustomerId = customerId,
                 Reason = reason,
                 BookId = _book.Id
             };

@@ -8,6 +8,6 @@
         public const string AUTHOR_NOT_FOUND = "Автор не найден.";
         public const string GENRE_NOT_FOUND = "Жанр не найден.";
         public const string ID_IS_ZERO = "ID равен 0";
-        public const string USER_NOT_FOUND = "Пользователь не найден.";
+        public const string CUSTOMER_NOT_FOUND = "Пользователь не найден.";
     }
 }

@@ -22,6 +22,8 @@ builder.Services.AddCors(options =>
 });
 
 builder
+    .AddBearerAuthentication()
+    .AddOptions()
     .AddSwagger()
     .AddData()
     .AddAutoMapper()
@@ -32,11 +34,11 @@ builder
 var app = builder.Build();
 
 app.UseHttpLogging();
-app.UseCors("AllowAllOrigins");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseCors("AllowAllOrigins");
 app.MapControllers();
 
 

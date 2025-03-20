@@ -11,7 +11,7 @@ namespace BookRecommendationSystem.Application.Mapping
             CreateMap<Book, BookDto>().ReverseMap();
             CreateMap<Author, AuthorDto>().ReverseMap();
             CreateMap<Genre, GenreDto>().ReverseMap();
-            CreateMap<User, UserDto>().ReverseMap();
+            CreateMap<Customer, CustomerDto>().ReverseMap();
         }
     }
 }
