@@ -3,7 +3,7 @@ using BookRecommendationSystem.Application.Abstractions;
 using BookRecommendationSystem.Application.DTOs;
 using BookRecommendationSystem.Application.Helpers;
 using BookRecommendationSystem.Domain.Entities;
-using BookRecommendationSystem.Domain.ExceptionMessageConsts;
+using BookRecommendationSystem.Domain.Exceptions;
 using BookRecommendationSystem.Domain.Repositories;
 
 namespace BookRecommendationSystem.Application.Services

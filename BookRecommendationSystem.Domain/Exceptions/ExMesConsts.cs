@@ -1,4 +1,4 @@
-﻿namespace BookRecommendationSystem.Domain.ExceptionMessageConsts
+﻿namespace BookRecommendationSystem.Domain.Exceptions
 {
     public class ExMesConsts
     {
