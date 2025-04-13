@@ -182,7 +182,7 @@ namespace BookRecommendationSystem.Domain.Aggregates
 
         private async Task<int> GetCustomerId(int userId)
         {
-            var customer = await _customerRepository.GetByUserIdAsync(userId)
+            var customer = await _customerRepository.GetByIdAsync(userId)
                 ?? throw new InvalidOperationException("Customer profile not found");
             
             return customer.Id;

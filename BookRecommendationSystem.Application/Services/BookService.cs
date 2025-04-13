@@ -160,7 +160,7 @@ namespace BookRecommendationSystem.Application.Services
 
         public async Task<IEnumerable<BookDto>> GetRecommendedBooksAsync(int userId)
         {
-            var customer = await _customerRepository.GetByUserIdAsync(userId);
+            var customer = await _customerRepository.GetByIdAsync(userId);
             Guard.AgainstNull(customer, nameof(customer));
 
             var books = await _bookRepository.GetRecommendedBooksAsync(userId);
