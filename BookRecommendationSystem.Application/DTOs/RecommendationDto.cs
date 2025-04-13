@@ -3,7 +3,7 @@
     public class RecommendationDto
     {
         public int Id { get; set; }
-        public string Reason { get; set; } = null!;
+        public string? Reason { get; set; }
         public float Score { get; set; }
         public DateTime CreatedAt { get; set; }
         public bool IsActive { get; set; }
