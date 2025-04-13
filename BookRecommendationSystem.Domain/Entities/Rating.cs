@@ -4,14 +4,15 @@
     {
         public int Id { get; set; }
         public int Score { get; set; } // Оценка от 1 до 5
-        public string Review { get; set; } = null!;// Опциональный отзыв
+        public string? Review { get; set; } // Опциональный отзыв
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
 
-        // Внешние ключи
         public int CustomerId { get; set; }
-        public int BookId { get; set; }
-
-        // Навигационные свойства
         public Customer Customer { get; set; } = null!;
+
+        public int BookId { get; set; }
         public Book Book { get; set; } = null!;
+
     }
 }
