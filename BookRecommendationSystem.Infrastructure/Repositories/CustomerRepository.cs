@@ -30,12 +30,7 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
             return await _context.Customers.ToListAsync();
         }
 
-        public async Task<Customer?> GetByEmailAsync(string email)
-        {
-            return await _context.Customers.FirstOrDefaultAsync(c => c.Email == email);
-        }
-
-        public async Task<Customer?> GetByIdAsync(int id)
+        public async Task<Customer?> GetByUserIdAsync(int id)
         {
             return await _context.Customers.FirstOrDefaultAsync(c => c.Id == id);
         }
