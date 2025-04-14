@@ -1,6 +1,7 @@
 ﻿using BookRecommendationSystem.Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace BookRecommendationSystem.Infrastructure
 {
@@ -17,6 +18,8 @@ namespace BookRecommendationSystem.Infrastructure
         public DbSet<Author> Authors { get; set; } = null!;
         public DbSet<Book> Books { get; set; } = null!;
         public DbSet<Genre> Genres { get; set; } = null!;
+        public DbSet<BookGenre> BookGenres { get; set; } = null!;
+        public DbSet<UserLibrary> UserLibraries { get; set; } = null!;
         public DbSet<Customer> Customers { get; set; } = null!;
         public DbSet<Rating> Ratings { get; set; } = null!;
         public DbSet<Recommendation> Recommendations { get; set; } = null!;
@@ -26,63 +29,93 @@ namespace BookRecommendationSystem.Infrastructure
         {
             base.OnModelCreating(modelBuilder);
 
-            // Настройка сущности Author
-            modelBuilder.Entity<Author>(entity =>
+            // 1. Identity таблицы
+            modelBuilder.Entity<UserEntity>(b =>
             {
-                entity.HasKey(a => a.Id); // Указываем первичный ключ
-                entity.Property(a => a.Name).IsRequired().HasMaxLength(100); // Ограничение на длину имени
+                b.ToTable("AspNetUsers");
+                b.HasOne(u => u.Customer)
+                 .WithOne(c => c.User)
+                 .HasForeignKey<Customer>(c => c.UserId)
+                 .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // Настройка сущности Book
-            modelBuilder.Entity<Book>(entity =>
+            modelBuilder.Entity<IdentityRoleEntity>(b =>
             {
-                entity.HasKey(b => b.Id); // Первичный ключ
-                entity.Property(b => b.Title).IsRequired().HasMaxLength(200); // Ограничение на длину названия
-                entity.HasOne(b => b.Author) // Связь с Author
-                      .WithMany(a => a.Books)
-                      .HasForeignKey(b => b.AuthorId);
-                entity.HasOne(b => b.Genre) // Связь с Genre
-                      .WithMany(g => g.Books)
-                      .HasForeignKey(b => b.GenreId);
+                b.ToTable("AspNetRoles");
             });
 
-            // Настройка сущности Genre
-            modelBuilder.Entity<Genre>(entity =>
+            // 2. Book ↔ Author (1:N)
+            modelBuilder.Entity<Book>(b =>
             {
-                entity.HasKey(g => g.Id); // Первичный ключ
-                entity.Property(g => g.Name).IsRequired().HasMaxLength(100); // Ограничение на длину названия жанра
+                b.HasOne(b => b.Author)
+                 .WithMany(a => a.Books)
+                 .HasForeignKey(b => b.AuthorId)
+                 .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // Настройка сущности Customer
-            modelBuilder.Entity<Customer>(entity =>
+            // 3. Book ↔ Genre (M:N через BookGenre)
+            modelBuilder.Entity<BookGenre>(b =>
             {
-                entity.HasKey(c => c.Id); // Первичный ключ
-                entity.Property(c => c.FirstName).IsRequired().HasMaxLength(50); // Ограничение на длину имени пользователя
-                entity.Property(c => c.LastName).IsRequired().HasMaxLength(50); // Ограничение на длину фамилии пользователя
-                entity.Property(c => c.MiddleName).IsRequired().HasMaxLength(50); // Ограничение на длину отчества пользователя
-                entity.Property(c => c.Email).IsRequired().HasMaxLength(100); // Ограничение на длину email
-                entity.Property(c => c.Phone).IsRequired().HasMaxLength(15); // Ограничение на длину номера телефона
+                b.HasKey(bg => new { bg.BookId, bg.GenreId });
+
+                b.HasOne(bg => bg.Book)
+                 .WithMany(b => b.Genres)
+                 .HasForeignKey(bg => bg.BookId);
+
+                b.HasOne(bg => bg.Genre)
+                 .WithMany(g => g.BookGenres)
+                 .HasForeignKey(bg => bg.GenreId);
             });
 
-            // Настройка сущности Rating
-            modelBuilder.Entity<Rating>(entity =>
+            // 4. Customer ↔ UserLibrary (1:N)
+            modelBuilder.Entity<UserLibrary>(b =>
             {
-                entity.HasKey(r => r.Id); // Первичный ключ
-                entity.HasOne(r => r.Book) // Связь с Book
-                      .WithMany(b => b.Ratings)
-                      .HasForeignKey(r => r.BookId);
+                b.HasOne(ul => ul.Customer)
+                 .WithMany(c => c.Libraries)
+                 .HasForeignKey(ul => ul.CustomerId)
+                 .OnDelete(DeleteBehavior.Cascade);
+
+                b.HasOne(ul => ul.Book)
+                 .WithMany(b => b.UserLibraries)
+                 .HasForeignKey(ul => ul.BookId)
+                 .OnDelete(DeleteBehavior.Cascade);
+
+                b.HasIndex(ul => new { ul.CustomerId, ul.BookId }).IsUnique();
             });
 
-            // Настройка сущности Recommendation
-            modelBuilder.Entity<Recommendation>(entity =>
+            // 5. Customer ↔ Rating (1:N)
+            modelBuilder.Entity<Rating>(b =>
             {
-                entity.HasKey(r => r.Id); // Первичный ключ
-                entity.HasOne(r => r.Book) // Связь с Book
-                      .WithMany(b => b.Recommendations)
-                      .HasForeignKey(r => r.BookId);
-                entity.HasOne(r => r.Customer) // Связь с Customer
-                      .WithMany(c => c.Recommendations)
-                      .HasForeignKey(r => r.CustomerId);
+                b.HasOne(r => r.Customer)
+                 .WithMany(c => c.Ratings)
+                 .HasForeignKey(r => r.CustomerId);
+
+                b.HasOne(r => r.Book)
+                 .WithMany(b => b.Ratings)
+                 .HasForeignKey(r => r.BookId);
+
+                b.HasIndex(r => new { r.CustomerId, r.BookId }).IsUnique();
+            });
+
+            // 6. Customer ↔ Recommendation (1:N)
+            modelBuilder.Entity<Recommendation>(b =>
+            {
+                b.HasOne(r => r.Customer)
+                 .WithMany(c => c.Recommendations)
+                 .HasForeignKey(r => r.CustomerId)
+                 .OnDelete(DeleteBehavior.SetNull);
+
+                b.HasOne(r => r.Book)
+                 .WithMany(b => b.Recommendations)
+                 .HasForeignKey(r => r.BookId);
+            });
+
+            // Валидации
+            modelBuilder.Entity<Book>(b =>
+            {
+                b.Property(x => x.PublishedYear)
+                 .HasAnnotation("Minimum", 1800)
+                 .HasAnnotation("Maximum", 2100);
             });
         }
     }

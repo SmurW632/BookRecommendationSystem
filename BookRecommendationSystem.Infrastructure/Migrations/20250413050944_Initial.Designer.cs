@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookRecommendationSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250209033000_UpdateIdentitySchema")]
-    partial class UpdateIdentitySchema
+    [Migration("20250413050944_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,13 +34,14 @@ namespace BookRecommendationSystem.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Biography")
-                        .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -62,28 +63,42 @@ namespace BookRecommendationSystem.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("GenreId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("PublishedYear")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasAnnotation("Maximum", 2100)
+                        .HasAnnotation("Minimum", 1800);
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
 
+                    b.ToTable("Books");
+                });
+
+            modelBuilder.Entity("BookRecommendationSystem.Domain.Entities.BookGenre", b =>
+                {
+                    b.Property<int>("BookId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("GenreId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("BookId", "GenreId");
+
                     b.HasIndex("GenreId");
 
-                    b.ToTable("Books");
+                    b.ToTable("BookGenres");
                 });
 
             modelBuilder.Entity("BookRecommendationSystem.Domain.Entities.Customer", b =>
@@ -100,32 +115,26 @@ namespace BookRecommendationSystem.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
                     b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("text");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("text");
 
                     b.Property<string>("MiddleName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("text");
 
-                    b.Property<string>("Phone")
+                    b.Property<string>("Nickname")
                         .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("character varying(15)");
+                        .HasColumnType("text");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Customers");
                 });
@@ -138,10 +147,12 @@ namespace BookRecommendationSystem.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -188,21 +199,27 @@ namespace BookRecommendationSystem.Infrastructure.Migrations
                     b.Property<int>("BookId")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("CustomerId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Review")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Score")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BookId");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("CustomerId", "BookId")
+                        .IsUnique();
 
                     b.ToTable("Ratings");
                 });
@@ -215,14 +232,21 @@ namespace BookRecommendationSystem.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AlgorithmType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("BookId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("CustomerId")
+                    b.Property<int?>("CustomerId")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -231,8 +255,8 @@ namespace BookRecommendationSystem.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<float>("Score")
-                        .HasColumnType("real");
+                    b.Property<decimal>("Score")
+                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
@@ -308,6 +332,39 @@ namespace BookRecommendationSystem.Infrastructure.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("BookRecommendationSystem.Domain.Entities.UserLibrary", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AddedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsFavorite")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("ReadingStatus")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("CustomerId", "BookId")
+                        .IsUnique();
+
+                    b.ToTable("UserLibraries");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -422,18 +479,40 @@ namespace BookRecommendationSystem.Infrastructure.Migrations
                     b.HasOne("BookRecommendationSystem.Domain.Entities.Author", "Author")
                         .WithMany("Books")
                         .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("BookRecommendationSystem.Domain.Entities.BookGenre", b =>
+                {
+                    b.HasOne("BookRecommendationSystem.Domain.Entities.Book", "Book")
+                        .WithMany("Genres")
+                        .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BookRecommendationSystem.Domain.Entities.Genre", "Genre")
-                        .WithMany("Books")
+                        .WithMany("BookGenres")
                         .HasForeignKey("GenreId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Author");
+                    b.Navigation("Book");
 
                     b.Navigation("Genre");
+                });
+
+            modelBuilder.Entity("BookRecommendationSystem.Domain.Entities.Customer", b =>
+                {
+                    b.HasOne("BookRecommendationSystem.Domain.Entities.UserEntity", "User")
+                        .WithOne("Customer")
+                        .HasForeignKey("BookRecommendationSystem.Domain.Entities.Customer", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BookRecommendationSystem.Domain.Entities.Rating", b =>
@@ -465,6 +544,24 @@ namespace BookRecommendationSystem.Infrastructure.Migrations
 
                     b.HasOne("BookRecommendationSystem.Domain.Entities.Customer", "Customer")
                         .WithMany("Recommendations")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Book");
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("BookRecommendationSystem.Domain.Entities.UserLibrary", b =>
+                {
+                    b.HasOne("BookRecommendationSystem.Domain.Entities.Book", "Book")
+                        .WithMany("UserLibraries")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookRecommendationSystem.Domain.Entities.Customer", "Customer")
+                        .WithMany("Libraries")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -532,13 +629,19 @@ namespace BookRecommendationSystem.Infrastructure.Migrations
 
             modelBuilder.Entity("BookRecommendationSystem.Domain.Entities.Book", b =>
                 {
+                    b.Navigation("Genres");
+
                     b.Navigation("Ratings");
 
                     b.Navigation("Recommendations");
+
+                    b.Navigation("UserLibraries");
                 });
 
             modelBuilder.Entity("BookRecommendationSystem.Domain.Entities.Customer", b =>
                 {
+                    b.Navigation("Libraries");
+
                     b.Navigation("Ratings");
 
                     b.Navigation("Recommendations");
@@ -546,7 +649,12 @@ namespace BookRecommendationSystem.Infrastructure.Migrations
 
             modelBuilder.Entity("BookRecommendationSystem.Domain.Entities.Genre", b =>
                 {
-                    b.Navigation("Books");
+                    b.Navigation("BookGenres");
+                });
+
+            modelBuilder.Entity("BookRecommendationSystem.Domain.Entities.UserEntity", b =>
+                {
+                    b.Navigation("Customer");
                 });
 #pragma warning restore 612, 618
         }

@@ -3,7 +3,7 @@ using BookRecommendationSystem.Application.Abstractions;
 using BookRecommendationSystem.Application.DTOs;
 using BookRecommendationSystem.Application.Helpers;
 using BookRecommendationSystem.Domain.Entities;
-using BookRecommendationSystem.Domain.ExceptionMessageConsts;
+using BookRecommendationSystem.Domain.Exceptions;
 using BookRecommendationSystem.Domain.Repositories;
 
 namespace BookRecommendationSystem.Application.Services
@@ -32,7 +32,7 @@ namespace BookRecommendationSystem.Application.Services
             var customer = await _customerRepository.GetByIdAsync(id);
             Guard.AgainstNull(customer, ExMesConsts.CUSTOMER_NOT_FOUND);
 
-            await _customerRepository.DeleteAsync(customer);
+            await _customerRepository.DeleteAsync(customer!);
         }
 
         public async Task<IEnumerable<CustomerDto>> GetAllCustomersAsync()

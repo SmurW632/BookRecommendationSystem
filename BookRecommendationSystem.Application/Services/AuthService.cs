@@ -49,9 +49,19 @@ namespace BookRecommendationSystem.Application.Services
 
         public async Task<UserResponse> Register(UserRegisterDto userRegisterDto)
         {
+            if (userRegisterDto.Password != userRegisterDto.ConfirmPassword)
+            {
+                throw new ValidationException("Passwords do not match");
+            }
+
             if (await userManager.FindByEmailAsync(userRegisterDto.Email) != null)
             {
                 throw new DuplicateEntityException($"Email {userRegisterDto.Email} already exists");
+            }
+
+            if (await userManager.FindByEmailAsync(userRegisterDto.Username) != null)
+            {
+                throw new DuplicateEntityException($"Username {userRegisterDto.Username} already exists");
             }
 
             var createUserResult = await userManager.CreateAsync(new UserEntity
@@ -136,5 +146,7 @@ namespace BookRecommendationSystem.Application.Services
 
             return claims;
         }
+
+        
     }
 }

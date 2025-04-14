@@ -4,8 +4,9 @@
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
+        public string? Description { get; set; }
 
-        // Навигационные свойства
-        public ICollection<Book> Books { get; set; } = [];
+        // Навигационное свойство
+        public ICollection<BookGenre> BookGenres { get; set; } = [];
     }
 }

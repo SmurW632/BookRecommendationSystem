@@ -7,14 +7,15 @@
         public string Description { get; set; } = null!;
         public int PublishedYear { get; set; }
         public string CoverImageUrl { get; set; } = null!;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // Внешние ключи
         public int AuthorId { get; set; }
-        public int GenreId { get; set; }
 
         // Навигационные свойства
-        public Author Author { get; set; } = null!;
-        public Genre Genre { get; set; } = null!;
+        public Author? Author { get; set; }
+        public ICollection<UserLibrary> UserLibraries { get; set; } = [];
+        public ICollection<BookGenre> Genres { get; set; } = [];
         public ICollection<Rating> Ratings { get; set; } = [];
         public ICollection<Recommendation> Recommendations { get; set; } = [];
     }

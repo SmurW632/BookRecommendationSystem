@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookRecommendationSystem.In
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookRecommendationSystem.Blazor", "BookRecommendationSystem.Blazor\BookRecommendationSystem.Blazor.csproj", "{8975CF6C-96F0-4A8A-80D9-B0449483D4EE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{CCAC591E-5775-46B2-8FB5-E93E0925A10B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{8975CF6C-96F0-4A8A-80D9-B0449483D4EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8975CF6C-96F0-4A8A-80D9-B0449483D4EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8975CF6C-96F0-4A8A-80D9-B0449483D4EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCAC591E-5775-46B2-8FB5-E93E0925A10B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCAC591E-5775-46B2-8FB5-E93E0925A10B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCAC591E-5775-46B2-8FB5-E93E0925A10B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCAC591E-5775-46B2-8FB5-E93E0925A10B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
