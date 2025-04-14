@@ -1,6 +1,5 @@
 ﻿using BookRecommendationSystem.Domain.Entities;
 using BookRecommendationSystem.Domain.Repositories;
-using System.ComponentModel.DataAnnotations;
 
 namespace BookRecommendationSystem.Domain.Aggregates
 {
