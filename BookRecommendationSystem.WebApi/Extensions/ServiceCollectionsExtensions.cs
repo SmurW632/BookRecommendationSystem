@@ -1,15 +1,13 @@
-﻿using BookRecommendationSystem.Application.Abstractions;
-using BookRecommendationSystem.Application.Services;
+﻿using BookRecommendationSystem.Application.Moduls.Authors.Services;
+using BookRecommendationSystem.Application.Moduls.Books.Services;
+using BookRecommendationSystem.Application.Moduls.Customers.Services;
+using BookRecommendationSystem.Application.Moduls.Genres.Services;
+using BookRecommendationSystem.Application.Shared.Mapping;
 using BookRecommendationSystem.Domain.Entities;
-using BookRecommendationSystem.Domain.Enums;
-using BookRecommendationSystem.Domain.Options;
-using BookRecommendationSystem.Domain.Repositories;
+using BookRecommendationSystem.Domain.Shared.Models;
+using BookRecommendationSystem.Domain.Shared.Options;
 using BookRecommendationSystem.Infrastructure;
-using BookRecommendationSystem.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -18,22 +16,14 @@ namespace BookRecommendationSystem.WebApi.Extensions
 {
     public static class ServiceCollectionsExtensions
     {
-        public static WebApplicationBuilder AddData(this WebApplicationBuilder builder)
-        {
-            builder.Services.AddDbContext<AppDbContext>(opt =>
-                opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-            return builder;
-        }
-
         public static WebApplicationBuilder AddAutoMapper(this WebApplicationBuilder builder)
         {
-            builder.Services.AddAutoMapper(typeof(Application.Mapping.MappingProfile).Assembly);
+            builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
             return builder;
         }
 
-         public static WebApplicationBuilder AddSwagger(this WebApplicationBuilder builder)
+        public static WebApplicationBuilder AddSwagger(this WebApplicationBuilder builder)
         {
             builder.Services.AddSwaggerGen(option =>
             {
@@ -99,43 +89,36 @@ namespace BookRecommendationSystem.WebApi.Extensions
                         ValidateIssuerSigningKey = false
                     };
                 });
-            builder.Services.AddAuthorization(options =>
-            {
-                options.AddPolicy("Admin", policy => policy.RequireRole(RoleConsts.Admin));
-                options.AddPolicy("User", policy => policy.RequireRole(RoleConsts.User));
-            });
-            builder.Services.AddTransient<IAuthService, AuthService>();
-            builder.Services.AddDefaultIdentity<UserEntity>(options =>
+
+            builder.Services.AddAuthorizationBuilder()
+                .AddPolicy("Admin", policy => policy.RequireRole(RoleConsts.Admin))
+                .AddPolicy("User", policy => policy.RequireRole(RoleConsts.User));
+
+            return builder;
+        }
+
+        public static WebApplicationBuilder AddIdentityConfiguration(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddDefaultIdentity<IdentityUserEntity>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
                 options.Password.RequiredLength = 6;
                 options.Password.RequireNonAlphanumeric = false;
             })
-                .AddEntityFrameworkStores<AppDbContext>()
-                .AddUserManager<UserManager<UserEntity>>()
-                .AddUserStore<UserStore<UserEntity, IdentityRoleEntity, AppDbContext, int>>();
+            .AddRoles<IdentityRoleEntity>()
+            .AddEntityFrameworkStores<AppDbContext>();
 
             return builder;
         }
 
-        public static WebApplicationBuilder AddOptions(this WebApplicationBuilder builder)
+        public static WebApplicationBuilder ConfigureOptions(this WebApplicationBuilder builder)
         {
             builder.Services.Configure<AuthOptions>(builder.Configuration.GetSection("Authentication"));
 
             return builder;
         }
 
-        public static WebApplicationBuilder AddRepositories(this WebApplicationBuilder builder)
-        {
-            builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
-            builder.Services.AddScoped<IBookRepository, BookRepository>();
-            builder.Services.AddScoped<IGenreRepository, GenreRepository>();
-            builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-
-            return builder;
-        }
-
-        public static WebApplicationBuilder AddServices(this WebApplicationBuilder builder)
+        public static WebApplicationBuilder AddApplicationServices(this WebApplicationBuilder builder)
         {
             builder.Services.AddScoped<IAuthorService, AuthorService>();
             builder.Services.AddScoped<IBookService, BookService>();

@@ -1,3 +1,4 @@
+using BookRecommendationSystem.Infrastructure;
 using BookRecommendationSystem.WebApi.Extensions;
 using Microsoft.AspNetCore.HttpLogging;
 
@@ -21,14 +22,15 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddInfrastructure(builder.Configuration.GetConnectionString("DefaultConnection"));
+
 builder
-    .AddBearerAuthentication()
-    .AddOptions()
+    .AddApplicationServices()
     .AddSwagger()
-    .AddData()
+    .AddBearerAuthentication()
+    .AddIdentityConfiguration()
     .AddAutoMapper()
-    .AddRepositories()
-    .AddServices();
+    .ConfigureOptions();
 
 
 var app = builder.Build();

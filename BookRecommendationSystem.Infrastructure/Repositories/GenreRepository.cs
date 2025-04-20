@@ -1,5 +1,4 @@
-﻿using BookRecommendationSystem.Domain.Entities;
-using BookRecommendationSystem.Domain.Repositories;
+﻿using BookRecommendationSystem.Domain.Modules.Genres;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookRecommendationSystem.Infrastructure.Repositories

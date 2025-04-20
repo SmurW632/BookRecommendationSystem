@@ -1,5 +1,5 @@
-﻿using BookRecommendationSystem.Application.Abstractions;
-using BookRecommendationSystem.Application.DTOs;
+﻿using BookRecommendationSystem.Application.Moduls.Genres;
+using BookRecommendationSystem.Application.Moduls.Genres.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookRecommendationSystem.WebApi.Controllers
