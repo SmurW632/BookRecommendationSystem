@@ -1,11 +1,17 @@
 ﻿using BookRecommendationSystem.Domain.Entities;
+using BookRecommendationSystem.Domain.Modules.Authors;
+using BookRecommendationSystem.Domain.Modules.Books;
+using BookRecommendationSystem.Domain.Modules.Customers;
+using BookRecommendationSystem.Domain.Modules.Genres;
+using BookRecommendationSystem.Domain.Modules.Libraries;
+using BookRecommendationSystem.Domain.Modules.Ratings;
+using BookRecommendationSystem.Domain.Modules.Recommendations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
 
 namespace BookRecommendationSystem.Infrastructure
 {
-    public class AppDbContext : IdentityDbContext<UserEntity, IdentityRoleEntity, int>
+    public class AppDbContext : IdentityDbContext<IdentityUserEntity, IdentityRoleEntity, int>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -30,14 +36,14 @@ namespace BookRecommendationSystem.Infrastructure
             base.OnModelCreating(modelBuilder);
 
             // 1. Identity таблицы
-            modelBuilder.Entity<UserEntity>(b =>
-            {
-                b.ToTable("AspNetUsers");
-                b.HasOne(u => u.Customer)
-                 .WithOne(c => c.User)
-                 .HasForeignKey<Customer>(c => c.UserId)
-                 .OnDelete(DeleteBehavior.Cascade);
-            });
+            //modelBuilder.Entity<IdentityUserEntity>(b =>
+            //{
+            //    b.ToTable("AspNetUsers");
+            //    b.HasOne(u => u.Customer)
+            //     .WithOne(c => c.User)
+            //     .HasForeignKey<Customer>(c => c.UserId)
+            //     .OnDelete(DeleteBehavior.Cascade);
+            //});
 
             modelBuilder.Entity<IdentityRoleEntity>(b =>
             {
