@@ -59,10 +59,10 @@ namespace BookRecommendationSystem.Infrastructure.Repositories
         public async Task<IEnumerable<Book>> GetRecommendedBooksAsync(int userId)
         {
             return await _context.Recommendations
-                .Where(r => r.Customer.UserId == userId && r.IsActive)
+                .Where(r => r.Customer!.UserId == userId && r.IsActive)
                 .OrderByDescending(r => r.Score)
-                .Select(r => r.Book)
-                .Include(b => b.Author)
+                .Select(r => r.Book!)
+                .Include(b => b!.Author)
                 .Distinct()
                 .ToListAsync();
         }

@@ -42,7 +42,7 @@ namespace BookRecommendationSystem.Application.Moduls.Books.Services
 
         public async Task AddBookAsync(BookDto bookDto)
         {
-            using var _ = _logger.BeginScope("Adding new book: {Title}", bookDto.Title);
+            using var _ = _logger.BeginScope($"Добавление новой книги: {bookDto.Title}");
 
             try
             {
